@@ -365,12 +365,11 @@ public class MainApp extends javax.swing.JFrame {
                   //getTextArea().setAutoIndentEnabled(true);
                   getTextArea().setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
                   getTextArea().setText(jsonText);
-             }
+            }
             createTree(jsonobj);
         }catch (Exception ex) {
-            //ex.printStackTrace();
+            Exceptions.printStackTrace(ex);
             showMessageDialog("非法JSON字符串！",ex.getMessage());
-            return;
         }
         System.gc();
     }
@@ -469,23 +468,46 @@ public class MainApp extends javax.swing.JFrame {
     }
     private void createTree(Object jsonobj){
          //创建树节点
-        JTree tree = getTree();
-        System.out.println("Put HashCode : " + tree.hashCode() + " . TabTitle : " + getTabTitle() +  " !");
-        jsonEleTreeMap.put(tree.hashCode(), jsonobj);
-        DefaultMutableTreeNode root = Kit.objNode("JSON");
-        DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+        DefaultMutableTreeNode root = null;
+        DefaultTreeModel model = null;
         try {
+            JTree tree = getTree();
+            System.out.println("Put HashCode : " + tree.hashCode() + " . TabTitle : " + getTabTitle() +  " !");
+            jsonEleTreeMap.put(tree.hashCode(), jsonobj);
+            Log.write("1");
+            root = Kit.objNode("JSON");
+            Log.write("2");
+            model = (DefaultTreeModel)tree.getModel();
+            Log.write("3");
             if(jsonobj instanceof JSONObject){
+                 Log.write("4");
                  analyzeJsonObject((JSONObject)jsonobj, root);
             }else if(jsonobj instanceof JSONArray){
+                Log.write("5");
                  analyzeJsonArray((JSONArray)jsonobj, root,"");
             }
+            Log.write("6");
+            //tree.getModel().
+            Log.write("count="+root.getChildCount());
             model.setRoot(root);
+            Log.write("7");
             setNodeIcon(tree);
+            Log.write("8");
         } catch (Exception ex) {
-            root.removeAllChildren();
-            model.setRoot(root);
+            Exceptions.printStackTrace(ex);
             showMessageDialog("创建json树失败！",ex.getMessage());
+            Log.write("9");
+            if(root!=null){
+                Log.write("10");
+                root.removeAllChildren();
+            }
+            Log.write("11");
+            if(model!=null){
+                Log.write("12");
+                //model.setRoot(root);
+            }
+            Log.write("13");
+           
         }
         System.gc();
     }
