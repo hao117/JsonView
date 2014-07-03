@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.sun.org.apache.xalan.internal.xsltc.runtime.BasisLibrary;
 import cy.jsonview.listener.FileOpenActionListener;
 import cy.jsonview.listener.FileSaveActionListener;
 import cy.jsonview.listener.FindActionListener;
@@ -15,7 +16,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.HeadlessException;
 import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -38,6 +43,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
@@ -46,11 +52,14 @@ import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentException;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -62,6 +71,7 @@ import org.netbeans.swing.tabcontrol.DefaultTabDataModel;
 import org.netbeans.swing.tabcontrol.TabData;
 import org.netbeans.swing.tabcontrol.TabDataModel;
 import org.netbeans.swing.tabcontrol.TabbedContainer;
+import org.openide.util.Exceptions;
 import org.xml.sax.SAXException;
 
 public class MainApp extends javax.swing.JFrame {
@@ -71,6 +81,7 @@ public class MainApp extends javax.swing.JFrame {
     private TabbedContainer  tabbedContainer;
     private final Map jsonEleTreeMap = new HashMap();
     public static final char dot = 30;
+    public String resPath = "cy/jsonview/resources/MainApp";
     
     public MainApp() {
         initComponents();
@@ -164,7 +175,7 @@ public class MainApp extends javax.swing.JFrame {
         
         initTabbedContainer();
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("cy/jsonview/resources/MainApp"); 
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle(resPath); 
         jMenuBar1.add(createFileMenu(bundle));
         jMenuBar1.add(createEditMenu(bundle));
         jMenuBar1.add(createToolMenu(bundle));
@@ -253,6 +264,54 @@ public class MainApp extends javax.swing.JFrame {
         TabData tabData = new TabData(splitPane, icon, tabName, tabTip);
         return tabData;
     }
+     
+    private void addPopupMenuItemCopyXml(RSyntaxTextArea textArea){
+        JPopupMenu popMenu = textArea.getPopupMenu();
+        popMenu.addPopupMenuListener(new PopupMenuListener() {
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                String text = getTextArea().getText();
+                JPopupMenu popMenu = getTextArea().getPopupMenu();
+                JMenuItem mtCopyXml = (JMenuItem)popMenu.getComponent(popMenu.getComponentCount()-1);
+                int num = text.indexOf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                if(num>=0 && num < 2){
+                    mtCopyXml.setEnabled(true);
+                }else{
+                    mtCopyXml.setEnabled(false);
+                }
+            }
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+            }
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent e) {
+            }
+        });
+        
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle(resPath); 
+        JMenuItem mtCopyXml = new JMenuItem(bundle.getString("mtCopyXml.text"));
+        mtCopyXml.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String xml = getTextArea().getText();
+                StringSelection stringSelection;
+                try {
+                    xml = Kit.formatXML(xml, false);
+                    xml = StringUtils.remove(xml, "<?xml versio<?xmln=\"1.0\" encoding=\"UTF-8\"?>");
+                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    stringSelection = new StringSelection(xml);
+                    clipboard.setContents(stringSelection, null);
+                } catch (HeadlessException ex) {
+                    Exceptions.printStackTrace(ex);
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                } catch (DocumentException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            }
+        });
+        popMenu.add(mtCopyXml);
+    }
 
     private RSyntaxTextArea newTextArea(){
         RSyntaxTextArea textArea = new RSyntaxTextArea();
@@ -264,6 +323,8 @@ public class MainApp extends javax.swing.JFrame {
         textArea.setTabSize(4);
         textArea.setAnimateBracketMatching(true);
         textArea.setPaintTabLines(true);
+        addPopupMenuItemCopyXml(textArea);
+        
         //textArea.setLineWrap(true);
 
         SyntaxScheme scheme = textArea.getSyntaxScheme();
@@ -712,6 +773,7 @@ public class MainApp extends javax.swing.JFrame {
         ta.setLineWrap(true);
         ta.setText(msg);
         ta.setWrapStyleWord(true);
+        dlg.setLocationRelativeTo(frame);
         dlg.getContentPane().add(new JScrollPane(ta), BorderLayout.CENTER);
         dlg.setVisible(true);
     }
