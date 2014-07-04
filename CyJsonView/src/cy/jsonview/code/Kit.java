@@ -12,18 +12,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.ImageIcon;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.io.XMLWriter;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.apache.commons.lang.StringUtils;
-import org.dom4j.DocumentHelper;
-import org.dom4j.io.XMLWriter;
-import org.w3c.dom.Document;
 
 
 /**
@@ -51,7 +53,7 @@ public class Kit {
    
     public final static String array   = "Array";
     public final static String object  = "Object";
-    
+    public static String baseResPath = "cy/jsonview/resources/";
     public static String  QUOT = "\"";
 
     public static DefaultMutableTreeNode nullNode(String key){

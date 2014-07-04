@@ -81,13 +81,14 @@ public class MainApp extends javax.swing.JFrame {
     private final Map jsonEleTreeMap = new HashMap();
     public static final char dot = 30;
     public String resPath = "cy/jsonview/resources/MainApp";
+    public String baseResPath = "cy/jsonview/resources/";
     
     public MainApp() {
         initComponents();
         this.setSize(1000, 600);
         setLocationRelativeTo(getOwner());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setTitle("CyJsonView 2.3 @藏言");
+        setTitle("CyJsonView 2.3.1 @藏言");
     }
     private int getTabIndex(){
         return tabbedContainer.getSelectionModel().getSelectedIndex();
@@ -444,26 +445,28 @@ public class MainApp extends javax.swing.JFrame {
                 super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
                 String tmp = node.toString();
+                ClassLoader classLoader = getClass().getClassLoader();
                 ImageIcon icon;
                 if (tmp.startsWith(Kit.sArr)) {
-                    icon = new ImageIcon(getClass().getResource("../resources/a.gif"));
+                    icon = new ImageIcon(classLoader.getResource(baseResPath+"a.gif"));
                 } else if (tmp.startsWith(Kit.sStr)) {
-                    icon = new ImageIcon(getClass().getResource("../resources/v.gif"));
+                    icon = new ImageIcon(classLoader.getResource(baseResPath+"v.gif"));
                 } else if (tmp.startsWith(Kit.sObj)) {
-                    icon = new ImageIcon(getClass().getResource("../resources/o.gif"));
+                    icon = new ImageIcon(classLoader.getResource(baseResPath+"o.gif"));
                 } else if (tmp.startsWith(Kit.sNum)) {
-                    icon = new ImageIcon(getClass().getResource("../resources/n.gif"));
+                    icon = new ImageIcon(classLoader.getResource(baseResPath+"n.gif"));
                 } else if (tmp.startsWith(Kit.sNull)) {
-                    icon = new ImageIcon(getClass().getResource("../resources/k.gif"));
+                    icon = new ImageIcon(classLoader.getResource(baseResPath+"k.gif"));
                 } else if (tmp.startsWith(Kit.sBool)) {
-                    icon = new ImageIcon(getClass().getResource("../resources/v.gif"));
+                    icon = new ImageIcon(classLoader.getResource(baseResPath+"v.gif"));
                 } else {
-                    icon = new ImageIcon(getClass().getResource("../resources/v.gif"));
+                    icon = new ImageIcon(classLoader.getResource(baseResPath+"v.gif"));
                 }
                 this.setIcon(icon);
                 this.setText(tmp.substring(2));
                 return this;
             }
+                
         });
     }
     private void createTree(Object jsonobj){
@@ -474,40 +477,27 @@ public class MainApp extends javax.swing.JFrame {
             JTree tree = getTree();
             System.out.println("Put HashCode : " + tree.hashCode() + " . TabTitle : " + getTabTitle() +  " !");
             jsonEleTreeMap.put(tree.hashCode(), jsonobj);
-            Log.write("1");
             root = Kit.objNode("JSON");
-            Log.write("2");
             model = (DefaultTreeModel)tree.getModel();
-            Log.write("3");
+//          root = (DefaultMutableTreeNode) model.getRoot();
             if(jsonobj instanceof JSONObject){
-                 Log.write("4");
                  analyzeJsonObject((JSONObject)jsonobj, root);
             }else if(jsonobj instanceof JSONArray){
-                Log.write("5");
                  analyzeJsonArray((JSONArray)jsonobj, root,"");
             }
-            Log.write("6");
-            //tree.getModel().
-            Log.write("count="+root.getChildCount());
+            tree.setVisible(true);
             model.setRoot(root);
-            Log.write("7");
             setNodeIcon(tree);
-            Log.write("8");
         } catch (Exception ex) {
+            Log.write(ex);
             Exceptions.printStackTrace(ex);
             showMessageDialog("创建json树失败！",ex.getMessage());
-            Log.write("9");
             if(root!=null){
-                Log.write("10");
                 root.removeAllChildren();
             }
-            Log.write("11");
-            if(model!=null){
-                Log.write("12");
-                //model.setRoot(root);
+            if(null!=model){
+                model.setRoot(root);
             }
-            Log.write("13");
-           
         }
         System.gc();
     }

@@ -8,6 +8,8 @@ package cy.jsonview.code;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import org.openide.util.Exceptions;
 
 /**
@@ -22,6 +24,18 @@ public class Log {
             fileWriter.flush();   
             fileWriter.close();
         } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+    
+    public static void write(Exception e){
+         try {
+            StringWriter sw = new StringWriter();  
+            PrintWriter pw = new PrintWriter(sw);  
+            e.printStackTrace(pw);  
+            write("异常:"+sw.toString());
+        }catch (Exception ex) {
+            write("write Exception异常");
             Exceptions.printStackTrace(ex);
         }
     }

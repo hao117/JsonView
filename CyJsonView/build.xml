@@ -71,12 +71,7 @@
 
     -->
     <target name="package-for-CyJsonView" depends="jar">
-        <javac srcdir="E:/mywork/netbeans/CyJsonView/CyJsonView/src" 
-         fork="yes" 
-         destdir="E:/mywork/netbeans/CyJsonView/CyJsonView/"        
-         executable="D:/Program Files/java/jdk1.6.0_31/bin/javac" 
-         compiler="javac1.6" 
-        /> 
+       
         <!-- Change the value of this property to be the name of your JAR,
              minus the .jar extension. It should not have spaces.
              <property name="store.jar.name" value="MyJarName"/>
