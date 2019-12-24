@@ -6,3 +6,7 @@
 可执行文件在 /JsonView/bin目录
 
 联系方式：邮箱beetle082@163.com，qq:275951533
+
+**源码地址**
+https://gitee.com/beetle082/JsonView
+https://github.com/hao117/JsonView
