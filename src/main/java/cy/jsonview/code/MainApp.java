@@ -12,13 +12,7 @@ import cy.jsonview.listener.QuitActionListener;
 import cy.jsonview.listener.TabDataModelComplexListDataListener;
 import cy.jsonview.listener.TreeMouseListener;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.HeadlessException;
-import java.awt.Insets;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
@@ -36,6 +30,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import javax.imageio.ImageIO;
+import javax.print.DocFlavor;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -91,10 +87,21 @@ public class MainApp extends javax.swing.JFrame {
         setLocationRelativeTo(getOwner());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setTitle("CyJsonView 2.3.2 @藏言");
+        initTitleIcon();
+        setVisible(true);
     }
 
     private int getTabIndex() {
         return tabbedContainer.getSelectionModel().getSelectedIndex();
+    }
+
+    private void initTitleIcon() {
+        try {
+            URL url = this.getClass().getClassLoader().getResource("json.gif");
+            this.setIconImage(ImageIO.read(url));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private RSyntaxTextArea getTextArea() {
@@ -123,7 +130,7 @@ public class MainApp extends javax.swing.JFrame {
 
     private JMenu createAboutMenu() {
         JMenu menuAbout = new javax.swing.JMenu();
-        menuAbout.setText("关于"); // NOI18N
+        menuAbout.setText("关于");
         JMenuItem menuItemLayout = createMenuItem("关于", KeyEvent.VK_A);
         menuItemLayout.addActionListener(new java.awt.event.ActionListener() {
             @Override
