@@ -23,13 +23,8 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
 import javax.imageio.ImageIO;
 import javax.print.DocFlavor;
 import javax.swing.Icon;
@@ -86,7 +81,7 @@ public class MainApp extends javax.swing.JFrame {
         this.setSize(1000, 600);
         setLocationRelativeTo(getOwner());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setTitle("CyJsonView 2.3.2 @藏言");
+        setTitle("CyJsonView 2.3.3 @藏言");
         initTitleIcon();
         setVisible(true);
     }
@@ -399,14 +394,22 @@ public class MainApp extends javax.swing.JFrame {
         if (jobj.isEmpty()) {
             return;
         }
-        List<String> keyList = new ArrayList<String>();
-        Iterator<String> itkey = jobj.keySet().iterator();
-        while (itkey.hasNext()) {
-            keyList.add(itkey.next());
+        TreeMap<String,Object> jsonMap = new TreeMap<>();
+        for(Map.Entry<String, Object> entry : jobj.entrySet()){
+            Object key = entry.getKey();
+            jsonMap.put(key.toString(),entry.getValue());
         }
-        Collections.sort(keyList);
-        for (String key : keyList) {
-            Object obj = jobj.get(key);
+//
+//        List<String> keyList = new ArrayList<String>();
+//        Iterator<String> itkey = jobj.keySet().iterator();
+//        while (itkey.hasNext()) {
+//            keyList.add(itkey.next());
+//        }
+//        Collections.sort(keyList);
+        for (Map.Entry<String, Object> entry : jsonMap.entrySet()) {
+            //Object obj = jobj.get(key);
+            String key = entry.getKey();
+            Object obj = entry.getValue();
             if (obj instanceof JSONObject) {
                 DefaultMutableTreeNode node = Kit.objNode(key);
                 analyzeJsonObject((JSONObject) obj, node);

@@ -23,7 +23,7 @@ public class AboutDialog {
         BoxLayout layout = new BoxLayout(pane, BoxLayout.Y_AXIS);
         pane.setLayout(layout);
         pane.add(new JLabel(" "));
-        pane.add(new JLabel("        CyJsonView 2.3.2"));
+        pane.add(new JLabel("        CyJsonView 2.3.3"));
         pane.add(new JLabel(" "));
         pane.add(new JLabel("        作者：藏言"));
         pane.add(new JLabel(" "));
