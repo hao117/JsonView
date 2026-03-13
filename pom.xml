@@ -57,6 +57,12 @@
             <artifactId>org-openide-windows</artifactId>
             <version>200804211638</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
         <!--- 上面部分依赖先执行lib/install.bat把jar安装到本地仓库里 -->
     </dependencies>
 
@@ -97,50 +103,9 @@
             </plugin>
 
             <plugin>
-                <groupId>com.akathist.maven.plugins.launch4j</groupId>
-                <artifactId>launch4j-maven-plugin</artifactId>
-                <version>1.7.25</version>
-                <executions>
-                    <execution>
-                        <id>l4j-clui</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>launch4j</goal>
-                        </goals>
-                        <configuration>
-                            <headerType>gui</headerType>
-                            <jar>${project.build.directory}/${artifactId}-${version}-shaded.jar</jar>
-                            <outfile>${project.build.directory}/jsonView.exe</outfile>
-                            <downloadUrl>http://java.com/download</downloadUrl>
-                            <classPath>
-                                <mainClass>cy.jsonview.code.MainApp</mainClass>
-                                <preCp>anything</preCp>
-                            </classPath>
-                            <icon>src/main/resources/json.ico</icon>
-                            <jre>
-                                <minVersion>1.8.0</minVersion>
-                                <jdkPreference>preferJre</jdkPreference>
-                            </jre>
-                            <versionInfo>
-                                <fileVersion>1.0.0.0</fileVersion>
-                                <txtFileVersion>${project.version}</txtFileVersion>
-                                <fileDescription>${project.name}</fileDescription>
-                                <copyright>2019 藏言</copyright>
-                                <productVersion>1.0.0.0</productVersion>
-                                <txtProductVersion>1.0.0.0</txtProductVersion>
-                                <productName>${project.name}</productName>
-                                <companyName>藏言</companyName>
-                                <internalName>jsonView</internalName>
-                                <originalFilename>jsonView.exe</originalFilename>
-                            </versionInfo>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -148,16 +113,12 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <copy
                                         file="${project.build.directory}/${artifactId}-${version}-shaded.jar"
                                         tofile="${basedir}/bin/${artifactId}.jar"
                                         overwrite="true"/>
-                                <copy
-                                file="${project.build.directory}/jsonView.exe"
-                                tofile="${basedir}/bin/jsonView.exe"
-                                overwrite="true"/>
-                            </tasks>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>
@@ -181,5 +142,79 @@
             </resource>
         </resources>
     </build>
+
+    <profiles>
+        <profile>
+            <id>build-exe</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                        <artifactId>launch4j-maven-plugin</artifactId>
+                        <version>1.7.25</version>
+                        <executions>
+                            <execution>
+                                <id>l4j-clui</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>launch4j</goal>
+                                </goals>
+                                <configuration>
+                                    <headerType>gui</headerType>
+                                    <jar>${project.build.directory}/${artifactId}-${version}-shaded.jar</jar>
+                                    <outfile>${project.build.directory}/jsonView.exe</outfile>
+                                    <downloadUrl>http://java.com/download</downloadUrl>
+                                    <classPath>
+                                        <mainClass>cy.jsonview.code.MainApp</mainClass>
+                                        <preCp>anything</preCp>
+                                    </classPath>
+                                    <icon>src/main/resources/json.ico</icon>
+                                    <jre>
+                                        <minVersion>1.8.0</minVersion>
+                                        <jdkPreference>preferJre</jdkPreference>
+                                    </jre>
+                                    <versionInfo>
+                                        <fileVersion>1.0.0.0</fileVersion>
+                                        <txtFileVersion>${project.version}</txtFileVersion>
+                                        <fileDescription>${project.name}</fileDescription>
+                                        <copyright>2019 藏言</copyright>
+                                        <productVersion>1.0.0.0</productVersion>
+                                        <txtProductVersion>1.0.0.0</txtProductVersion>
+                                        <productName>${project.name}</productName>
+                                        <companyName>藏言</companyName>
+                                        <internalName>jsonView</internalName>
+                                        <originalFilename>jsonView.exe</originalFilename>
+                                    </versionInfo>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-exe</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <copy
+                                            file="${project.build.directory}/jsonView.exe"
+                                            tofile="${basedir}/bin/jsonView.exe"
+                                            overwrite="true"/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
